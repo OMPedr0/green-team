@@ -39,6 +39,7 @@ const LoginUser = () => {
             </button>
           </div>
           <div className="mt-6 text-center">
+          <input type="checkbox" name="nome_da_caixa">
             <p className="text-gray-600">
               Ao entrar, você concorda com nossos{' '}
               <a href="/politica-de-privacidade" className="text-blue-500 hover:underline">
@@ -49,6 +50,7 @@ const LoginUser = () => {
                 política de privacidade
               </a>
             </p>
+            </input>
           </div>
         </div>
         {/* Adicione aqui outros elementos, como imagens ou informações adicionais, conforme necessário */}
