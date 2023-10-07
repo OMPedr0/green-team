@@ -1,10 +1,16 @@
-import Image from 'next/image'
-import Search from './search/page'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { AuthProvider } from '../api/auth';
+import User from './user/page';
 
-export default function () {
+function App() {
   return (
-    <>
-    <Search/>
-    </>
-  )
+    <div>
+      <AuthProvider>
+        <User />
+      </AuthProvider>
+    </div>
+  );
 }
+
+ReactDOM.render(<App />, document.getElementById('root'));

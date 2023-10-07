@@ -1,69 +1,45 @@
-import React, { useEffect, useState } from "react";
+"use client"
 
+// Importe os módulos necessários
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 
+import { auth } from "../../api/firebaseConfig";
+// Defina o tipo para os dados do formulário
 
-
-import { useAuth } from "../../api/auth"; // Importe o contexto de autenticação
-
-type FormData = {
-  name: string;
-  email: string;
-  // Adicione outros campos do formulário aqui
-};
 
 export default function User() {
 
-  const { user } = useAuth(); // Use o contexto de autenticação para obter os dados do usuário
-  const [formData, setFormData] = useState<FormData>({
-    // Defina os campos do formulário e seus valores iniciais
-    name: user ? user.displayName || "" : "",
-    email: user ? user.email || "" : "",
-    // Adicione outros campos aqui
-  });
-
   
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const [user, setUser] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Faça algo com os dados do formulário, como enviar para o servidor ou armazenar localmente
-    console.log(formData);
-  };
+  // Obtenha o usuário do contexto de autenticação
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        // O usuário está autenticado, você pode acessar suas informações em authUser
+        setUser(authUser);
+      } else {
+        // O usuário não está autenticado
+        setUser(null);
+      }
+    });
+
+    // Certifique-se de limpar o listener ao desmontar o componente
+    return () => unsubscribe();
+  }, []);
+
 
   return (
     <div>
       <h1>Perfil do Usuário</h1>
-      <p>Bem-vindo, {formData.name}!</p>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Nome:
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </label>
-        <br />
-        {/* Adicione outros campos do formulário aqui */}
-        <button type="submit">Salvar</button>
-      </form>
+      {user ? (
+        <div>
+         <p>Bem-vindo, {user.displayName}!</p>
+        </div>
+      ) : (
+        <p>Usuário não está logado.</p>
+      )}
+     
     </div>
   );
 }
