@@ -2,6 +2,11 @@ import React from 'react';
 import Link from 'next/link'; // Importe o componente Link do Next.js
 
 function Navbar({ username }) {
+
+  function handleLogoutClick() {
+    auth.signOut();
+    router.push("/");
+  }
   return (
     <nav className="bg-emerald-500 p-4">
       <div className="container mx-auto flex items-center justify-between">
@@ -26,7 +31,7 @@ function Navbar({ username }) {
             </Link>
           </li>
           <li>
-            <a href="/login" className="text-white hover:underline">Sair</a>
+            <a onClick={handleLogoutClick} className="text-white hover:underline">Sair</a>
           </li>
         </ul>
       </div>

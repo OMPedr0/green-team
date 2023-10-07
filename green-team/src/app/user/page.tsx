@@ -2,7 +2,7 @@
 
 // Importe os módulos necessários
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
-
+import { useRouter } from 'next/navigation';
 import { auth } from "../../api/firebaseConfig";
 // Defina o tipo para os dados do formulário
 
@@ -11,6 +11,7 @@ export default function User() {
 
   
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   // Obtenha o usuário do contexto de autenticação
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function User() {
         // O usuário está autenticado, você pode acessar suas informações em authUser
         setUser(authUser);
       } else {
-        // O usuário não está autenticado
+        router.push('/login')
         setUser(null);
       }
     });
@@ -27,6 +28,8 @@ export default function User() {
     // Certifique-se de limpar o listener ao desmontar o componente
     return () => unsubscribe();
   }, []);
+
+
 
 
   return (

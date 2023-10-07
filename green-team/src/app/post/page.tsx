@@ -7,7 +7,7 @@ import "firebase/auth"; // Importe o módulo de autenticação do Firebase aqui
 // Importe auth de "../../api/firebaseConfig"
 import { auth } from "../../api/firebaseConfig";
 import Navbar from "../components/navbar/navbar";
-
+import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 
 interface CreatePostCardProps {
@@ -32,6 +32,8 @@ export default function Post() {
     category: '',
   });
 
+  const router = useRouter();
+
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setFormData({
@@ -47,13 +49,14 @@ export default function Post() {
     multiple: false,
   });
 
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        // O usuário está autenticado, você pode acessar suas informações em authUser
+        
         setUser(authUser);
       } else {
-        // O usuário não está autenticado
+        router.push('/login')
         setUser(null);
       }
     });
@@ -61,6 +64,8 @@ export default function Post() {
     // Certifique-se de limpar o listener ao desmontar o componente
     return () => unsubscribe();
   }, []);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
