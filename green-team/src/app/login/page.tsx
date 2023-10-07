@@ -1,15 +1,15 @@
-import Login from "@/api/login/page"
+import LoginUser from "../../api/loginuser/page"
 import React from "react"
 
 
 
-export default function Procura() {
+export default function Login() {
 
 
 
   return (
     <div>
-        <Login/>
+        <LoginUser/>
     </div>
   )
 }
