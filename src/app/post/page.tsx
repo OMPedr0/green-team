@@ -61,7 +61,7 @@ export default function Post() {
     return () => unsubscribe();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -69,6 +69,15 @@ export default function Post() {
     });
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
@@ -177,12 +186,12 @@ export default function Post() {
             <div className="mb-4">
               <label htmlFor="category" className="block text-gray-600 mb-2">Categoria:</label>
               <select
-                id="category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full p-2 text-black border border-gray-300 rounded-lg focus:ring focus:ring-blue-400"
-              >
+  id="category"
+  name="category"
+  value={formData.category}
+  onChange={handleSelectChange}
+  className="w-full p-2 text-black border border-gray-300 rounded-lg focus:ring focus:ring-blue-400"
+>
                 <option className="text-black" value="">Selecione uma categoria</option>
                 <option value="Agricultural Techniques">Agricultural Techniques</option>
                 <option value="Medicinal Techniques">Medicinal Techniques</option>
