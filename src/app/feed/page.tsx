@@ -39,7 +39,6 @@ export default function Feed() {
 
   const router = useRouter();
 
-  const PostDetail = dynamic(() => import(`./[postId]`));
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -53,7 +52,7 @@ export default function Feed() {
     return () => unsubscribe();
   }, []);
 
-  const { postId } = router.query || {};
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -61,23 +60,33 @@ export default function Feed() {
         const postsRef = collection(db, "posts");
         const querySnapshot = await getDocs(postsRef);
         const postsData: Post[] = [];
+
         querySnapshot.forEach((doc) => {
           const postData = doc.data() as Post;
-          postsData.push({ id: doc.id, ...postData });
+          postsData.push({
+            ...postData,
+            id: doc.id,
+          });
         });
-        
+
         setPosts(postsData);
-        
+
         postsData.forEach((post) => {
           const commentsRef = collection(db, `posts/${post.id}/comentarios`);
           const postCommentsQuery = query(commentsRef);
-        
+
           onSnapshot(postCommentsQuery, (querySnapshot) => {
-            const postCommentsData: Comment[] = querySnapshot.docs.map((doc) => {
+            const postCommentsData: Comment[] = [];
+
+            querySnapshot.forEach((doc) => {
               const commentData = doc.data() as Comment;
-              return { id: doc.id, ...commentData };
+              postCommentsData.push({
+                ...commentData,
+                id: doc.id,
+
+              });
             });
-        
+
             setComments((prevComments) => ({
               ...prevComments,
               [post.id]: postCommentsData,
@@ -91,6 +100,9 @@ export default function Feed() {
 
     fetchPosts();
   }, []);
+
+
+
 
   const addComment = async (postId: string, name: string, description: string) => {
     try {
@@ -163,17 +175,6 @@ export default function Feed() {
                             <p className="text-black">{comment.description}</p>
                           </div>
                         ))}
-                        {comments[post.id].length > 3 && (
-                          <Link
-                            href="/feed/[postId]"
-                            as={`/feed/${post.id}`}
-                            passHref
-                          >
-                            <span className="text-black">
-                              Ver todos os comentários ({comments[post.id].length})
-                            </span>
-                          </Link>
-                        )}
                       </div>
                     )}
                   </div>
