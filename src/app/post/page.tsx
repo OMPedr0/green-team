@@ -5,7 +5,7 @@ import Navbar from "../components/navbar/navbar";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Importe as funções do Firebase Storage
 import { useRouter } from 'next/navigation';
-import { useDropzone,DropzoneOptions } from 'react-dropzone';
+import { useDropzone,DropzoneOptions, Accept } from 'react-dropzone';
 
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -42,7 +42,7 @@ export default function Post() {
   // Converta as propriedades DropzoneProps em DropzoneOptions
   const dropzoneOptions: DropzoneOptions = {
     onDrop,
-    accept: "image/jpeg" as Accept,
+    accept: "image/jpeg" as unknown as Accept,
     multiple: false,
   };
 
