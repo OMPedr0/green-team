@@ -12,8 +12,6 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import dynamic from "next/dynamic";
 import { User } from "firebase/auth";
 
 interface Comment {

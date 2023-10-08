@@ -38,9 +38,10 @@ export default function Post() {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: ['image/*'],
+    accept: 'image/*', 
     multiple: false,
   });
+  
   
 
   useEffect(() => {
