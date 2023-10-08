@@ -1,7 +1,7 @@
 "use client"
 // Importe os módulos necessários
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/router'; // Corrija a importação do useRouter
+import { useRouter } from 'next/navigation'; // Corrija a importação do useRouter
 import { auth, db } from "../../api/firebaseConfig";
 import Navbar from "../components/navbar/navbar";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";

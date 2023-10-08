@@ -7,6 +7,9 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Importe 
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 interface PostData {
   image: File | null;
   name: string;
@@ -43,7 +46,7 @@ export default function Post() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (!authUser) {
-        router.push('/login');
+        router.push('/');
         setUser(null);
       } else {
         setUser(authUser);
@@ -106,6 +109,8 @@ export default function Post() {
         category: "",
       });
   
+
+      toast.success("Publicação publicada com sucesso!", { theme: "dark" });
       // Você pode adicionar uma mensagem de sucesso ou navegar para outra página
       // router.push("/success"); // Exemplo de navegação
     } catch (error) {
@@ -115,6 +120,7 @@ export default function Post() {
 
   return (
     <div>
+      <ToastContainer />
       {user ? (
         <div>
           <Navbar username={user.displayName} />

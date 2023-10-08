@@ -37,7 +37,6 @@ export default function Feed() {
   const [comments, setComments] = useState<{ [postId: string]: Comment[] }>({});
   const [commentText, setCommentText] = useState<string>("");
 
-  const router = useRouter();
 
 
   useEffect(() => {
@@ -45,6 +44,7 @@ export default function Feed() {
       if (authUser) {
         setUser(authUser);
       } else {
+        router.push('/');
         setUser(null);
       }
     });
@@ -123,7 +123,7 @@ export default function Feed() {
         ) : (
           <p>Usuário não está logado.</p>
         )}
-
+  
         <div className="flex justify-center p-4">
           <div className="w-1/4">
             {posts.map((post) => (
@@ -149,16 +149,9 @@ export default function Feed() {
                         className="h-32 w-auto rounded-lg"
                       />
                     )}
-                    {post.logoURL && (
-                      <img
-                        src={post.logoURL}
-                        alt="Logo da postagem"
-                        className="h-16 w-auto rounded-lg"
-                      />
-                    )}
                   </div>
                 </div>
-
+  
                 <div className="w-full mt-4">
                   <div>
                     {comments[post.id] && comments[post.id].length > 0 && (
@@ -166,15 +159,17 @@ export default function Feed() {
                         <h3 className="text-lg text-black font-semibold">
                           Comentários:
                         </h3>
-                        {comments[post.id].slice(0, 3).map((comment) => (
-                          <div
-                            key={comment.id}
-                            className="border border-gray-300 p-4 my-4"
-                          >
-                            <p className="text-black">{comment.name}</p>
-                            <p className="text-black">{comment.description}</p>
-                          </div>
-                        ))}
+                        <div className="comments-section max-h-[300px] overflow-y-auto">
+                          {comments[post.id].slice(0, 3).map((comment) => (
+                            <div
+                              key={comment.id}
+                              className="border border-gray-300 p-4 my-4"
+                            >
+                              <p className="text-black">{comment.name}</p>
+                              <p className="text-black">{comment.description}</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -211,4 +206,5 @@ export default function Feed() {
       </div>
     </div>
   );
+  
 }
