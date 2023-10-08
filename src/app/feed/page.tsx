@@ -11,7 +11,7 @@ import {
   query,
   onSnapshot,
 } from "firebase/firestore";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { User } from "firebase/auth";
@@ -37,7 +37,7 @@ export default function Feed() {
   const [comments, setComments] = useState<{ [postId: string]: Comment[] }>({});
   const [commentText, setCommentText] = useState<string>("");
 
-
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
