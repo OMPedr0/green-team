@@ -17,6 +17,13 @@ interface PostData {
   category: string;
 }
 
+interface DropzoneProps {
+  accept: string | string[];
+  onDrop: (acceptedFiles: File[]) => void;
+  multiple: boolean;
+}
+
+
 export default function Post() {
   const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState<PostData>({
@@ -36,11 +43,14 @@ export default function Post() {
     }
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  // Aqui você pode usar uma string ou um array de strings para 'accept'
+  const dropzoneProps: DropzoneProps = {
     onDrop,
-    accept: 'image/*', 
+    accept: 'image/*', // ou accept: ['image/*'],
     multiple: false,
-  });
+  };
+
+  const { getRootProps, getInputProps } = useDropzone(dropzoneProps);
   
   
 
