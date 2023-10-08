@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link'; // Importe o componente Link do Next.js
+import { auth } from "../../../api/firebaseConfig";
 
 function Navbar({ username }) {
 
@@ -20,10 +21,10 @@ function Navbar({ username }) {
         </div>
         <ul className="flex space-x-4">
           <li>
-            <a href="/dashboard" className="text-white hover:underline">Dashboard</a>
+            <a href="/feed" className="text-white hover:underline">Feed</a>
           </li>
           <li>
-            <a href="/profile" className="text-white hover:underline">Perfil</a>
+            <a href="/user" className="text-white hover:underline">Perfil</a>
           </li>
           <li>
             <Link href="/post"> {/* Adicione o caminho da página de criação de post aqui */}

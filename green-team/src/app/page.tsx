@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { AuthProvider } from '../api/auth';
-import User from './user/page';
+import Login from './login/page';
 
-function App() {
+export default function () {
   return (
     <div>
       <AuthProvider>
-        <User />
+        <Login />
       </AuthProvider>
     </div>
   );
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+
