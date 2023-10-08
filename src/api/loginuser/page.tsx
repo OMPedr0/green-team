@@ -33,10 +33,7 @@ const LoginUser = () => {
     setIsChecked(!isChecked);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Impedir o envio do formulário ao pressionar Enter
-  };
+
 
   return (
     <div>
