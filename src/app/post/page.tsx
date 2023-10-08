@@ -5,7 +5,8 @@ import Navbar from "../components/navbar/navbar";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Importe as funções do Firebase Storage
 import { useRouter } from 'next/navigation';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone,DropzoneOptions } from 'react-dropzone';
+
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,13 +17,6 @@ interface PostData {
   description: string;
   category: string;
 }
-
-interface DropzoneProps {
-  accept: string | string[];
-  onDrop: (acceptedFiles: File[]) => void;
-  multiple: boolean;
-}
-
 
 export default function Post() {
   const [user, setUser] = useState<any>(null);
@@ -36,23 +30,23 @@ export default function Post() {
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
+      // Verificação de tipo
+      const image = acceptedFiles[0] as File;
       setFormData({
         ...formData,
-        image: acceptedFiles[0],
+        image: image,
       });
     }
   };
 
-  // Aqui você pode usar uma string ou um array de strings para 'accept'
-  const dropzoneProps: DropzoneProps = {
+  // Converta as propriedades DropzoneProps em DropzoneOptions
+  const dropzoneOptions: DropzoneOptions = {
     onDrop,
-    accept: 'image/*', // ou accept: ['image/*'],
+    accept: "image/jpeg" as Accept,
     multiple: false,
   };
 
-  const { getRootProps, getInputProps } = useDropzone(dropzoneProps);
-  
-  
+  const { getRootProps, getInputProps } = useDropzone(dropzoneOptions);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
