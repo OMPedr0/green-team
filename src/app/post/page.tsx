@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { auth, db, storage } from "../../api/firebaseConfig"; // Certifique-se de importar o storage
 import Navbar from "../components/navbar/navbar";
