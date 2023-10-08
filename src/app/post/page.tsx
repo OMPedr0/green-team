@@ -35,17 +35,18 @@ export default function Post() {
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: 'image/*',
+    accept: ['image/*'],
     multiple: false,
   });
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser) {
-        setUser(authUser);
-      } else {
-        router.push('/login')
+      if (!authUser) {
+        router.push('/login');
         setUser(null);
+      } else {
+        setUser(authUser);
       }
     });
 
@@ -90,7 +91,7 @@ export default function Post() {
         name: formData.name,
         description: formData.description,
         category: formData.category,
-        user_id: auth.currentUser.uid,
+        user_id: auth.currentUser?.uid,
         imageURL: imageURL, // Adicione a URL da imagem aos dados do post
       };
   
@@ -111,7 +112,6 @@ export default function Post() {
       console.error("Erro ao adicionar documento: ", error);
     }
   };
-  
 
   return (
     <div>
@@ -190,5 +190,5 @@ export default function Post() {
         </div>
       </div>
     </div>
-  )
+  );
 }

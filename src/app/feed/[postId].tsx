@@ -1,41 +1,56 @@
 import { db } from '../../api/firebaseConfig';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import {
   collection,
-  getDocs,
-  addDoc,
   doc,
-  onSnapshot,
-} from "firebase/firestore";
+  getDoc,
+  getDocs,
+  DocumentSnapshot,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
+
+interface Comment {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface Post {
+  title: string;
+  content: string;
+}
 
 function PostDetail() {
   const router = useRouter();
-const { postId } = router.query;
+  const { postId } = router.query;
 
-  const [comments, setComments] = useState([]);
-  const [post, setPost] = useState(null);
-
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [post, setPost] = useState<Post | null>(null);
 
   useEffect(() => {
     if (postId) {
       const loadPostAndComments = async () => {
         try {
           // Carregue os detalhes da publicação com base em postId
-          const postRef = collection(db,'posts').getDocs(postId);
-          const postSnapshot = await postRef.get();
-          const postData = postSnapshot.data();
+          const postRef = doc(db, 'posts', postId as string);
+          const postSnapshot: DocumentSnapshot = await getDoc(postRef);
+          const postData = postSnapshot.data() as Post | undefined;
 
           if (postData) {
             setPost(postData);
 
             // Carregue os comentários com base em postId
-            const commentsRef = collection(db,`posts/${postId}/comentarios`);
-            const commentsQuerySnapshot = await commentsRef.get();
-            const commentsData = commentsQuerySnapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
+            const commentsRef = collection(db, `posts/${postId}/comentarios`);
+            const commentsQuerySnapshot = await getDocs(commentsRef);
+            const commentsData: Comment[] = commentsQuerySnapshot.docs.map(
+              (doc: QueryDocumentSnapshot) => ({
+                id: doc.id,
+                ...doc.data(),
+              })
+            );
 
             setComments(commentsData);
           } else {
@@ -68,7 +83,7 @@ const { postId } = router.query;
         </div>
       ))}
     </div>
-  );  
+  );
 }
 
 export default PostDetail;

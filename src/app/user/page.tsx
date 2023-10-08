@@ -1,20 +1,42 @@
-"use client"// Importe os módulos necessários
+"use client"
+// Importe os módulos necessários
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router'; // Corrija a importação do useRouter
 import { auth, db } from "../../api/firebaseConfig";
 import Navbar from "../components/navbar/navbar";
 import { collection, query, where, getDocs, doc, updateDoc } from "firebase/firestore";
 
 interface PostData {
+  imageURL: string | undefined;
   id: string;
   name: string;
   description: string;
   category: string;
   user_id: string;
 }
+interface EditFormProps {
+  editName: string;
+  editDescription: string;
+  editCategory: string;
+  handleEditSubmit: (e: React.FormEvent) => void;
+  handleEditNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleEditDescriptionChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleEditCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  closeEditModal: () => void;
+  editablePost?: PostData; // Adicionando editablePost como uma propriedade opcional
+}
 
-function EditForm({ editablePost, editName, editDescription, editCategory, handleEditSubmit, handleEditNameChange, handleEditDescriptionChange, handleEditCategoryChange, closeEditModal }) {
-  return (
+function EditForm({
+  editName,
+  editDescription,
+  editCategory,
+  handleEditSubmit,
+  handleEditNameChange,
+  handleEditDescriptionChange,
+  handleEditCategoryChange,
+  closeEditModal,
+  editablePost // Declaramos a propriedade como opcional
+}: EditFormProps) { return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="fixed inset-0 bg-black opacity-40"></div>
       <div className="bg-white rounded-lg shadow-lg p-6 z-50">
@@ -85,7 +107,6 @@ export default function User() {
   const [editDescription, setEditDescription] = useState("");
   const [editCategory, setEditCategory] = useState("");
 
-
   const [selectedPost, setSelectedPost] = useState<PostData | null>(null); // Postagem selecionada
   const router = useRouter();
 
@@ -122,13 +143,12 @@ export default function User() {
     }
   };
 
-
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       // Atualize os dados no Firebase
-      const postDocRef = doc(db, 'posts', editablePost.id);
+      const postDocRef = doc(db, 'posts', editablePost!.id); // Certifique-se de que editablePost não é nulo
       await updateDoc(postDocRef, {
         name: editName,
         description: editDescription,
@@ -164,7 +184,6 @@ export default function User() {
     setEditCategory(e.target.value);
   };
 
-
   const editPost = (post: PostData) => {
     setEditablePost(post);
     setIsEditModalOpen(true);
@@ -192,34 +211,33 @@ export default function User() {
 
           <h2 className="text-2xl font-semibold my-4">Minhas Publicações</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {userPosts.map((post) => (
-  <div key={post.id} className="bg-white rounded-lg p-4 cursor-pointer">
-     <div className="text-right"> {/* Posicione a imagem e o botão à direita */}
-      {post.imageURL && (
-        <img
-          src={post.imageURL}
-          alt="Imagem da postagem"
-          className="max-h-32 mb-2 float-right rounded-lg" // Use float-right para mover a imagem para a direita
-        />
-      )}
-      </div>
-    <div onClick={() => openPostDetails(post)}>
-      <p className="text-xl text-black font-semibold">{post.name}</p>
-      <p className="text-lg text-black">{post.description}</p>
-      <p className="text-black">{post.category}</p>
-    </div>
-   
-      <div>
-      <button
-        onClick={() => editPost(post)}
-        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mt-2 ml-auto" // Use ml-auto para mover o botão para a direita
-      >
-        Editar
-      </button>
-    </div>
-  </div>
-))}
-
+            {userPosts.map((post) => (
+              <div key={post.id} className="bg-white rounded-lg p-4 cursor-pointer">
+                <div className="text-right">
+                  {/* Posicione a imagem e o botão à direita */}
+                  {post.imageURL && (
+                    <img
+                      src={post.imageURL}
+                      alt="Imagem da postagem"
+                      className="max-h-32 mb-2 float-right rounded-lg" // Use float-right para mover a imagem para a direita
+                    />
+                  )}
+                </div>
+                <div onClick={() => openPostDetails(post)}>
+                  <p className="text-xl text-black font-semibold">{post.name}</p>
+                  <p className="text-lg text-black">{post.description}</p>
+                  <p className="text-black">{post.category}</p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => editPost(post)}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 mt-2 ml-auto" // Use ml-auto para mover o botão para a direita
+                  >
+                    Editar
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
 
           {selectedPost && (

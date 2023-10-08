@@ -1,8 +1,9 @@
 import React from 'react';
 import Link from 'next/link'; // Importe o componente Link do Next.js
 import { auth } from "../../../api/firebaseConfig";
+import router from 'next/router';
 
-function Navbar({ username }) {
+function Navbar({ username }: { username: string }) {
 
   function handleLogoutClick() {
     auth.signOut();

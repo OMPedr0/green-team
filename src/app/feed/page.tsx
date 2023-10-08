@@ -1,7 +1,4 @@
 "use client"
-
-// pages/feed.tsx
-
 // pages/feed.tsx
 
 import React, { useEffect, useState } from "react";
@@ -14,19 +11,33 @@ import {
   query,
   onSnapshot,
 } from "firebase/firestore";
-import { useRouter } from "next/navigation"; // Corrija a importação do useRouter
+import { useRouter } from "next/router";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { User } from "firebase/auth";
 
-import PostDetail from './[postId]';
+interface Comment {
+  id: string;
+  name: string;
+  description: string;
+}
 
+interface Post {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  imageURL?: string;
+  logoURL?: string;
+}
 
 export default function Feed() {
-  const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState({});
-  const [commentText, setCommentText] = useState("");
-  const router = useRouter(); // Corrija a maneira como o useRouter é importado
+  const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<{ [postId: string]: Comment[] }>({});
+  const [commentText, setCommentText] = useState<string>("");
+
+  const router = useRouter();
 
   const PostDetail = dynamic(() => import(`./[postId]`));
 
@@ -49,26 +60,24 @@ export default function Feed() {
       try {
         const postsRef = collection(db, "posts");
         const querySnapshot = await getDocs(postsRef);
-
-        const postsData = [];
+        const postsData: Post[] = [];
         querySnapshot.forEach((doc) => {
-          const postData = doc.data();
+          const postData = doc.data() as Post;
           postsData.push({ id: doc.id, ...postData });
         });
-
+        
         setPosts(postsData);
-
+        
         postsData.forEach((post) => {
           const commentsRef = collection(db, `posts/${post.id}/comentarios`);
           const postCommentsQuery = query(commentsRef);
-
+        
           onSnapshot(postCommentsQuery, (querySnapshot) => {
-            const postCommentsData = [];
-            querySnapshot.forEach((doc) => {
-              const commentData = doc.data();
-              postCommentsData.push({ id: doc.id, ...commentData });
+            const postCommentsData: Comment[] = querySnapshot.docs.map((doc) => {
+              const commentData = doc.data() as Comment;
+              return { id: doc.id, ...commentData };
             });
-
+        
             setComments((prevComments) => ({
               ...prevComments,
               [post.id]: postCommentsData,
@@ -83,7 +92,7 @@ export default function Feed() {
     fetchPosts();
   }, []);
 
-  const addComment = async (postId, name, description) => {
+  const addComment = async (postId: string, name: string, description: string) => {
     try {
       const commentsRef = collection(db, `posts/${postId}/comentarios`);
       await addDoc(commentsRef, { name, description });
@@ -95,10 +104,9 @@ export default function Feed() {
   return (
     <div>
       <div>
-
         {user ? (
           <div>
-            <Navbar username={user.displayName} />
+            <Navbar username={user.displayName || ""} />
           </div>
         ) : (
           <p>Usuário não está logado.</p>
@@ -106,15 +114,17 @@ export default function Feed() {
 
         <div className="flex justify-center p-4">
           <div className="w-1/4">
-            {posts.map((post, index) => (
+            {posts.map((post) => (
               <div
-                key={index}
+                key={post.id}
                 className="bg-white rounded-lg p-2 cursor-pointer mb-4 flex flex-col"
               >
                 <div className="flex">
                   <div className="w-2/3 text-center px-4">
                     <div className="text-left">
-                      <h2 className="text-lg text-black font-semibold">{post.name}</h2>
+                      <h2 className="text-lg text-black font-semibold">
+                        {post.name}
+                      </h2>
                       <p className="text-sm text-black">{post.description}</p>
                       <p className="text-xs text-black">{post.category}</p>
                     </div>
@@ -141,15 +151,24 @@ export default function Feed() {
                   <div>
                     {comments[post.id] && comments[post.id].length > 0 && (
                       <div>
-                        <h3 className="text-lg text-black font-semibold">Comentários:</h3>
-                        {comments[post.id].slice(0, 3).map((comment, commentIndex) => (
-                          <div key={commentIndex} className="border border-gray-300 p-4 my-4">
+                        <h3 className="text-lg text-black font-semibold">
+                          Comentários:
+                        </h3>
+                        {comments[post.id].slice(0, 3).map((comment) => (
+                          <div
+                            key={comment.id}
+                            className="border border-gray-300 p-4 my-4"
+                          >
                             <p className="text-black">{comment.name}</p>
                             <p className="text-black">{comment.description}</p>
                           </div>
                         ))}
                         {comments[post.id].length > 3 && (
-                          <Link href="/feed/[postId]" as={`/feed/${post.id}`} passHref>
+                          <Link
+                            href="/feed/[postId]"
+                            as={`/feed/${post.id}`}
+                            passHref
+                          >
                             <span className="text-black">
                               Ver todos os comentários ({comments[post.id].length})
                             </span>
@@ -159,23 +178,23 @@ export default function Feed() {
                     )}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold">Adicionar Comentário:</h3>
+                    <h3 className="text-lg font-semibold">
+                      Adicionar Comentário:
+                    </h3>
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
-                        addComment(post.id, user.displayName, commentText[post.id]);
+                        addComment(post.id, user?.displayName || "", commentText);
+                        setCommentText("");
                       }}
                     >
                       <input
                         type="text"
                         className="text-black"
                         placeholder="Seu comentário"
-                        value={commentText[post.id]}
+                        value={commentText}
                         onChange={(e) => {
-                          setCommentText((prevCommentText) => ({
-                            ...prevCommentText,
-                            [post.id]: e.target.value,
-                          }));
+                          setCommentText(e.target.value);
                         }}
                       />
                       <button type="submit" className="text-black">
@@ -188,7 +207,6 @@ export default function Feed() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
